@@ -1,0 +1,87 @@
+[gd_scene load_steps=12 format=3 uid="uid://b6ae7fplxlnvl"]
+
+[ext_resource type="Script" path="res://Character/whoopie.gd" id="1_n0veb"]
+[ext_resource type="Texture2D" uid="uid://fiak4ufs2t6d" path="res://Art/PixelDogsSprites/Pixel Dogs-Sprites/Dogs-Remastered-00.png" id="1_p2pwx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bkiel"]
+size = Vector2(55, 36)
+
+[sub_resource type="Animation" id="Animation_xf6ws"]
+resource_name = "walk_right"
+length = 0.7
+loop_mode = 2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6]
+}
+
+[sub_resource type="Animation" id="Animation_rikx8"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_r84s5"]
+_data = {
+"RESET": SubResource("Animation_rikx8"),
+"walk_right": SubResource("Animation_xf6ws")
+}
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_txgs8"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_djhq6"]
+animation = &"walk_right"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ebno6"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_74yg3"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_m8hvb"]
+states/Idle/node = SubResource("AnimationNodeBlendSpace2D_txgs8")
+states/Idle/position = Vector2(344, 98)
+states/Start/position = Vector2(205, 92)
+states/walk_right/node = SubResource("AnimationNodeAnimation_djhq6")
+states/walk_right/position = Vector2(363, 97)
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_ebno6"), "Idle", "walk_right", SubResource("AnimationNodeStateMachineTransition_74yg3")]
+
+[node name="Whoopie" type="CharacterBody2D"]
+script = ExtResource("1_n0veb")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(4, 10)
+texture = ExtResource("1_p2pwx")
+hframes = 8
+vframes = 7
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(3.5, 10)
+shape = SubResource("RectangleShape2D_bkiel")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_r84s5")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource("AnimationNodeStateMachine_m8hvb")
+anim_player = NodePath("../AnimationPlayer")
+parameters/Idle/blend_position = Vector2(0, 0)
